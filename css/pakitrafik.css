@@ -1,20 +1,42 @@
 body {
 	background-image:url("/pakitrafik/images/connectwork.png");
+	font-family:"Tahoma";
+	margin:0;
+	height:100%;
 }
 
 header {
 	border-width:0 0 1px 0;
-	border-color:white;
+	border-color:oldlace;
 	border-style:solid;
 	display:flex;
 	justify-content:flex-start;
 }
 
-.headerButton {
-	color:white;
+.menuItem {
+	color:oldlace;
+	padding:0.5rem;
+	cursor:default;
 }
 
-.headerButton:hover {
-	background-color:white;
+.menuItem:hover {
+	background-color:oldlace;
 	color:black;
+}
+
+#mainContainer {
+	width:100%;
+	display:flex;
+}
+
+#sidebar {
+	border-width:0 0 1px 0;
+	border-color:oldlace;
+	border-style:solid;
+	display:flex;
+	flex-direction:column;
+}
+
+#contentWindow {
+	flex-grow:1;
 }
