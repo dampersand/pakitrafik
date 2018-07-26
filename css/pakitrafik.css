@@ -1,0 +1,20 @@
+body {
+	background-image:url("/pakitrafik/images/connectwork.png");
+}
+
+header {
+	border-width:0 0 1px 0;
+	border-color:white;
+	border-style:solid;
+	display:flex;
+	justify-content:flex-start;
+}
+
+.headerButton {
+	color:white;
+}
+
+.headerButton:hover {
+	background-color:white;
+	color:black;
+}
