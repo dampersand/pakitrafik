@@ -1,16 +1,14 @@
+html {
+	height:100%;
+}
+
 body {
 	background-image:url("/pakitrafik/images/connectwork.png");
 	font-family:"Tahoma";
 	margin:0;
-	height:100%;
-}
-
-header {
-	border-width:0 0 1px 0;
-	border-color:oldlace;
-	border-style:solid;
+	min-height:100%;
 	display:flex;
-	justify-content:flex-start;
+	flex-direction:column;
 }
 
 .menuItem {
@@ -25,12 +23,12 @@ header {
 }
 
 #mainContainer {
-	width:100%;
 	display:flex;
+	flex-grow:1;
 }
 
 #sidebar {
-	border-width:0 0 1px 0;
+	border-width:0 1px 0 0;
 	border-color:oldlace;
 	border-style:solid;
 	display:flex;
