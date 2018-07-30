@@ -8,7 +8,7 @@ const Promise = require("promise");
 //config files
 var config = require("./config.js");
 
-module.exports = function() {
+module.exports = {
 	//returns a promise that should include the checksum for the map in question
 	checkMap: function(mapName, directory = config.package.mapDirectory) {
 		return new Promise(function(resolve, reject) {
@@ -18,9 +18,9 @@ module.exports = function() {
 				} else {
 					resolve(sum);
 				}
-			}
+			})
 		});
-	}
+	},
 	//returns a promise that should include the 
 	getMap: function(mapName, directory = config.package.mapDirectory) {
 		//asynchronously get checksum of map file and read said map from file
