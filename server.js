@@ -3,7 +3,7 @@
 //constants and instantiations
 const express 	= require('express');
 const app 			= express();
-const mapWorker = require('./mapworker.js');
+const mapWorker = require('lib/mapWorker.js');
 
 const config 			= require('./config.js');
 
