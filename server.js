@@ -1,10 +1,11 @@
 /*server.js*/
 
 //constants and instantiations
-const express = require('express');
-const app 		= express();
+const express 	= require('express');
+const app 			= express();
+const mapWorker = require('./mapworker.js');
 
-var config 		= require('./config.js');
+const config 			= require('./config.js');
 
 //precreate all maps in map directory as map objects here.
 //map constructor should load checksum, nodes, links, background, size,
