@@ -1,12 +1,16 @@
 /*server.js*/
 
-//constants and instantiations
+//external dependencies
 const express 	= require('express');
-const app 			= express();
-const mapWorker = require('./lib/mapWorker.js');
+const app				= express();
 
+//internal assets
+let mapSet = require('lib/mapSet.js');
+
+//config files
 const config 			= require('./config.js');
 
+mapSet.initMapSet();
 //precreate all maps in map directory as map objects here.
 //map constructor should load checksum, nodes, links, background, size,
 //anything that might be needed for rendering.
