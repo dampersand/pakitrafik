@@ -5,12 +5,12 @@ const express 	= require('express');
 const app				= express();
 
 //internal assets
-let mapSet = require('lib/mapSet.js');
+let mapSet = Object.create(require('./lib/mapSet.js').mapSet);
 
 //config files
 const config 			= require('./config.js');
 
-mapSet.initMapSet();
+mapSet.initMapSet()
 //precreate all maps in map directory as map objects here.
 //map constructor should load checksum, nodes, links, background, size,
 //anything that might be needed for rendering.
