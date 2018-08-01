@@ -4,16 +4,13 @@
 const express 	= require('express');
 const app				= express();
 
-//internal assets
+//the one-off mapSet object
 let mapSet = Object.create(require('./lib/mapSet.js').mapSet);
 
 //config files
 const config 			= require('./config.js');
 
 mapSet.initMapSet()
-//precreate all maps in map directory as map objects here.
-//map constructor should load checksum, nodes, links, background, size,
-//anything that might be needed for rendering.
 //we also need a way to scan for any deleted maps, and destroy the object if so.
 //map objects should include a function to re-check checksums.
 
