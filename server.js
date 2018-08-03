@@ -6,11 +6,13 @@ const app				= express();
 
 //the one-off mapSet object
 let mapSet = Object.create(require('./lib/mapSet.js').mapSet);
+let gatherer = Object.create(require('./lib/gatherer.js').gatherer);
 
 //config files
 const config 			= require('./config.js');
 
 mapSet.init()
+gatherer.init()
 //we also need a way to scan for any deleted maps, and destroy the object if so.
 //map objects should include a function to re-check checksums.
 

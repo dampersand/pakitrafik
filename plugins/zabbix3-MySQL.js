@@ -84,30 +84,32 @@ const plugin = {
 		query = query + "select @valType := value_type from items where itemid = @itemID; ";
 		query = query + "select @tableStr := case ";
 		for (index in valueTypes) {
-			query = query + "when @valType = " + index + " THEN '" + valueTypes['index'] + "'";
+			query = query + "when @valType = " + index + " THEN '" + valueTypes[index] + "'";
 		} 
 		query = query + "end; ";
 		query = query + "set @queryString := concat('select value,MAX(clock) from ', @tableStr, ' where itemid = ', @itemID, ';'); ";
 		query = query + "prepare stmt from @queryString; execute stmt; ";
 
 		//establish the connection
-		let connectionEstablished = Promise(function(resolve,reject) {
-			this.pool.getconnection(function(err, connection) {
+		let connectionEstablished = new Promise(function(resolve,reject) {
+			this.pool.getConnection(function(err, connection) {
 				if (err) {
 					//TODO: error checking here
 					return reject(err);
 				} else {
 					resolve(connection);
 				}
-			}.bind(this));
-		})
+			});
+		}.bind(this));
 
 		//set the promise chain as the return value for this function
-		return connectionEstablished.then(function() {
+		return connectionEstablished.then(function(connection) {
 
 			//once the connection has been established, promisify the query function and send the query
 			return new Promise(function(resolve,reject) {
 				connection.query(query, function(err, res, fields) {
+					//ALWAYS release the connection once finished
+					connection.release();
 					if (err) {
 						//TODO: error checking here
 					} else {
