@@ -10,7 +10,7 @@ let mapSet = Object.create(require('./lib/mapSet.js').mapSet);
 //config files
 const config 			= require('./config.js');
 
-mapSet.initMapSet()
+mapSet.init()
 //we also need a way to scan for any deleted maps, and destroy the object if so.
 //map objects should include a function to re-check checksums.
 
