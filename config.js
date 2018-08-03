@@ -15,6 +15,10 @@ config.redis.port=3000; 									//integer
 //config.settings
 //general settings for pakitrafik
 
+//how old (in seconds) data on a map can be before it's considered too old to show
+//prevents disabled items from showing past data as current data.
+config.settings.linkValueTTL = 120; //integer
+
 //how often (in seconds) to perform checksum testing on the in-memory map set.
 //More often means map structures are updated more often but will increase backend load.
 config.settings.mapSetUpdateInterval = 30; //integer

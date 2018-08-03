@@ -11,14 +11,12 @@ const valueTypes = ['history','history_str','history_log','history_uint','histor
 
 //all plugins should have the following exposed to gatherer (even if they're dummies):
 //connected - property to tell if the plugin is in the 'connected' state, ie, ready to accept queries
-//parallel - property to tell if the plugin can serve multiple queries at once
 //init - method to initialize everything the plugin needs, including a connection to the database if required
 //query - method to translate a link's valueSource into a database query, query for the data, and then pass a promise back with the data; data should be an object of the form {"value":latest Value, "time": unix timestamp when value was taken}
 //disconnect - method to gracefully close all connection to the database
 const plugin = {
 	"pool" : undefined,
 	"connected" : false,
-	"parallel" : true,
 
 	//This plugin's init method will create a pool of connections.
 	//TODO: check to make sure that the connections actually WORK inside this init method.
@@ -65,6 +63,7 @@ const plugin = {
 
 	//for zabbix, the valueSource should be an object of {"host":hostname, "key":keyname}.
 	//we will consider using itemID, but that's hard for the user to figure out.
+	//returns a promise for when query is done
 	query(valueSource) {
 
 		//TODO: consider sanity-checking valueSource
