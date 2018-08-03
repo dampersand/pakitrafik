@@ -13,7 +13,7 @@ const valueTypes = ['history','history_str','history_log','history_uint','histor
 //connected - property to tell if the plugin is in the 'connected' state, ie, ready to accept queries
 //parallel - property to tell if the plugin can serve multiple queries at once
 //init - method to initialize everything the plugin needs, including a connection to the database if required
-//query - method to translate a link's valueSource into a database query, query for the data, and then pass a promise back with the data.
+//query - method to translate a link's valueSource into a database query, query for the data, and then pass a promise back with the data; data should be an object of the form {"value":latest Value, "time": unix timestamp when value was taken}
 //disconnect - method to gracefully close all connection to the database
 const plugin = {
 	"pool" : undefined,
@@ -26,10 +26,11 @@ const plugin = {
 
 		//set connection params
 		let options = {
-			"connectionLimit"	: config.database.connections, 
-			"password"				: config.database.password,
-			"database"				: config.database.dbName,
-			"user"						: config.database.user
+			"connectionLimit"			: config.database.connections, 
+			"password"						: config.database.password,
+			"database"						: config.database.dbName,
+			"user"								: config.database.user,
+			"multipleStatements"	: true //TODO: figure out of it's better to use one set of multiple statements or one large statement
 		};
 
 		//if the user wants to use sockets, set those parameters, else use TCP
@@ -54,13 +55,13 @@ const plugin = {
 			return;
 		}
 
-		pool.end(function(err) {
+		this.pool.end(function(err) {
 			if (err) {
 				//TODO: some error checking here
 			}
 			this.connected = false;
 		});
-	}
+	},
 
 	//for zabbix, the valueSource should be an object of {"host":hostname, "key":keyname}.
 	//we will consider using itemID, but that's hard for the user to figure out.
@@ -68,35 +69,59 @@ const plugin = {
 
 		//TODO: consider sanity-checking valueSource
 
-		//build the query
-		//example queries to get the value
+		//build the query.  This plugin expects queries to be asking for the latest value of a host:key pair, so it won't work with anything else!
+
+		//example query to get the latest value of a host:key pair:
+		//select @hostID := hostid from hosts where name = 'router1';
+		//select @itemID := itemid from items where hostid = @hostID and key_ 'Router1ISP1Down';
+		//select @valType := value_type from items where itemid = @itemID;
 		//select @tableStr := case when @valType = 0 THEN 'history' when @valType = 1 THEN 'history_str' when @valType = 2 THEN 'history_log' when @valType = 3 THEN 'history_uint' when @valType = 4 THEN 'history_text' end;
 		//set @queryString := concat('select value,MAX(clock) from ', @tableStr, ' where itemid = ', @itemID, ';');
 		//prepare stmt from @queryString;
 		//execute stmt;
-		let query = "select @hostID := hostid from hosts where name = '" + valueSource['host'] + "';";
-		query = query + "select @itemID := itemid from items where hostid = @hostID and key_ = '" + valueSource['key'] + "';";
-		query = query + "select @valType := value_type from items where itemid = @itemID;";
-		query = query + "select @tableStr := case when @valType = 0 THEN 'history' when @valType = 1 THEN 'history_str' when @valType = 2 THEN 'history_log' when @valType = 3 THEN 'history_uint' when @valType = 4 THEN 'history_text' end;";
-		query = query + "set @queryString := concat('select value,MAX(clock) from ', @tableStr, ' where itemid = ', @itemID, ';')";
-		query = query + "prepare stmt from @queryString; execute stmt;";
 
-		//get/create a connection from the pool
-		this.pool.getconnection(function(err, connection){
-			if (err) {
-				//TODO: handle error value
-			}
+		let query = "select @hostID := hostid from hosts where name = '" + valueSource['host'] + "'; ";
+		query = query + "select @itemID := itemid from items where hostid = @hostID and key_ = '" + valueSource['key'] + "'; ";
+		query = query + "select @valType := value_type from items where itemid = @itemID; ";
+		query = query + "select @tableStr := case ";
+		for (index in valueTypes) {
+			query = query + "when @valType = " + index + " THEN '" + valueTypes['index'] + "'";
+		} 
+		query = query + "end; ";
+		query = query + "set @queryString := concat('select value,MAX(clock) from ', @tableStr, ' where itemid = ', @itemID, ';'); ";
+		query = query + "prepare stmt from @queryString; execute stmt; ";
 
-			connection.query(query, function(err, res, fields){
+		//establish the connection
+		let connectionEstablished = Promise(function(resolve,reject) {
+			this.pool.getconnection(function(err, connection) {
 				if (err) {
-					//TODO: handle error value
+					//TODO: error checking here
+					return reject(err);
+				} else {
+					resolve(connection);
 				}
-				//committing this for test purposes.  This query will probably need built differently.
-				console.log('res: ' + res);
-				console.log('fields: ' + fields)
-			});
-
+			}.bind(this));
 		})
+
+		//set the promise chain as the return value for this function
+		return connectionEstablished.then(function() {
+
+			//once the connection has been established, promisify the query function and send the query
+			return new Promise(function(resolve,reject) {
+				connection.query(query, function(err, res, fields) {
+					if (err) {
+						//TODO: error checking here
+					} else {
+						//derive the correct data from the query result
+						let retVal = {
+							"value"	: res.slice(-1)[0][0]['value'],
+							"time"	: res.slice(-1)[0][0]['MAX(clock)']
+						};
+						resolve(retVal)
+					}
+				});
+			});
+		});
 	}
 };
 
