@@ -42,7 +42,7 @@ const plugin = {
 		//create the pool
 		this.pool = mysql.createPool(options);
 
-		//TODO: error checking on pool creation - can a connection be made?
+		//TODO: error checking on pool creation - can a connection be made?  is mysql actually running?  etc
 		this.connected = true;
 	},
 
