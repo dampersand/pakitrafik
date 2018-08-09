@@ -17,22 +17,19 @@ gatherer.init()
 //map objects should include a function to re-check checksums.
 
 
-//handle post requests
-app.post('/', function(req, res, next) {
-	if (req.body.checksum) {res.locals.checksum = req.body.checksum};
-	if (req.body.map) {res.locals.map = req.body.map};
-	next();
-});
+//this is all testing: none of this should be how the final product is served.  Just taking notes as I go.
 
 //handle get requests.  gets take precedent over posts, because I said so.
 app.get('/', function(req, res, next) {
 	if (req.query.checksum) {res.locals.checksum = req.query.checksum};
 	if (req.query.map) {res.locals.map = req.query.map};
+	res.sendFile('public/pakitrafik.html');
 	next();
 });
 
 //temporary testing function that exposes everything in the 'client' subdirectory
-app.use(express.static('client'));
+//in reality, we should probably be using Pug to template this all out.
+app.use(express.static('public'));
 
 //next set of code goes here - determine if map exists, if checksum is correct, etc
 //app.use

@@ -67,4 +67,24 @@ function drawNode(nodeObj,ctx){
 window.onload = function() {
 	let canvas = document.getElementById('mapCanvas');
 	let ctx = canvas.getContext('2d');
+
+
+/*	let request = new XMLHttpRequest();
+	request.open('GET', 'localhost:3000/', true);
+
+request.onload = function() {
+  if (request.status >= 200 && request.status < 400) {
+    // Success!
+    var data = JSON.parse(request.responseText);
+  } else {
+    // We reached our target server, but it returned an error
+
+  }
+};
+
+request.onerror = function() {
+  // There was a connection error of some sort
+};
+
+request.send();*/
 }
