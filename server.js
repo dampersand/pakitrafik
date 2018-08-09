@@ -31,10 +31,8 @@ app.get('/', function(req, res, next) {
 	next();
 });
 
-//temporary testing function
-app.use('/pakitrafik.html', function(req, res, next){
-	express.static('client/pakitrafik.html');
-})
+//temporary testing function that exposes everything in the 'client' subdirectory
+app.use(express.static('client'));
 
 //next set of code goes here - determine if map exists, if checksum is correct, etc
 //app.use
